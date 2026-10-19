@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0A1024">
+<title>县城里的无人车 · 中国三四线城市 Robotaxi 调研报告</title>
+<meta name="description" content="2026年10月最新调研：三四线城市无人出租车真实落地情况、玩家下沉策略、政策牌照、单车经济模型与安徽市场研判。">
+<style>
+:root{
+  --ink:#0A1024;
+  --ink-2:#1B2440;
+  --muted:#5C6479;
+  --paper:#F6F7FB;
+  --card:#FFFFFF;
+  --line:rgba(10,16,36,.08);
+  --accent:#2F5BFF;
+  --accent-soft:#E8EEFF;
+  --teal:#00B39B;
+  --teal-soft:#E1F7F3;
+  --amber:#F5A524;
+  --amber-soft:#FFF3DC;
+  --pink:#FF5A8A;
+  --pink-soft:#FFE8EF;
+  --shadow:0 8px 26px rgba(10,16,36,.07);
+  --shadow-lg:0 18px 48px rgba(10,16,36,.13);
+  --r:18px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:#E9ECF4;
+  color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Noto Sans SC","Microsoft YaHei",system-ui,sans-serif;
+  font-size:15px;
+  line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+.app{
+  max-width:640px;margin:0 auto;background:var(--paper);
+  min-height:100vh;position:relative;overflow:hidden;
+  box-shadow:0 0 60px rgba(10,16,36,.10);
+}
+@media(max-width:660px){.app{max-width:100%;box-shadow:none}body{background:var(--paper)}}
+
+/* ============ 进度条 ============ */
+#prog{
+  position:fixed;top:0;left:0;right:0;height:3px;z-index:200;
+  transform-origin:0 50%;transform:scaleX(0);
+  background:linear-gradient(90deg,#2F5BFF,#00B39B 55%,#F5A524);
+  transition:transform .08s linear;
+}
+
+/* ============ 封面 ============ */
+.hero{
+  position:relative;padding:74px 24px 58px;
+  background:
+    radial-gradient(120% 80% at 85% 0%,rgba(47,91,255,.55),transparent 60%),
+    radial-gradient(90% 70% at 0% 100%,rgba(0,179,155,.35),transparent 55%),
+    linear-gradient(165deg,#080D1E 0%,#101B3E 45%,#16295C 100%);
+  color:#fff;overflow:hidden;border-radius:0 0 30px 30px;
+}
+.hero::after{
+  content:"";position:absolute;inset:0;
+  background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);
+  background-size:34px 34px;
+  mask-image:linear-gradient(180deg,rgba(0,0,0,.9),transparent 78%);
+  pointer-events:none;
+}
+.hero-top{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;margin-bottom:30px}
+.badge{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:11.5px;letter-spacing:.06em;font-weight:600;
+  padding:6px 11px;border-radius:100px;
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);
+  color:#EAF0FF;backdrop-filter:blur(6px);
+}
+.badge i{width:6px;height:6px;border-radius:50%;background:#37E6C3;box-shadow:0 0 10px #37E6C3;display:block}
+.hero-date{font-size:11.5px;color:rgba(255,255,255,.62);letter-spacing:.04em}
+.eyebrow{
+  position:relative;z-index:2;font-size:12px;letter-spacing:.22em;color:#8FA8FF;
+  font-weight:700;margin-bottom:14px;
+}
+h1.title{
+  position:relative;z-index:2;margin:0 0 18px;
+  font-size:clamp(30px,8.6vw,42px);line-height:1.18;
+  font-weight:800;letter-spacing:-.5px;
+}
+h1.title em{
+  font-style:normal;
+  background:linear-gradient(100deg,#7FE7D6,#B9C8FF 60%,#FFC978);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero-sub{
+  position:relative;z-index:2;margin:0 0 26px;max-width:26em;
+  font-size:14.5px;line-height:1.8;color:rgba(233,239,255,.78);
+}
+.hero-meta{position:relative;z-index:2;display:flex;flex-wrap:wrap;gap:8px;margin-bottom:34px}
+.chip{
+  font-size:11.5px;color:rgba(255,255,255,.8);font-weight:500;
+  padding:5px 10px;border-radius:8px;background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.12);
+}
+.hstats{
+  position:relative;z-index:2;display:grid;grid-template-columns:1fr 1fr;
+  gap:1px;background:rgba(255,255,255,.14);border-radius:16px;overflow:hidden;
+  border:1px solid rgba(255,255,255,.16);
+}
+.hstat{background:rgba(9,15,34,.58);padding:16px 16px 14px;backdrop-filter:blur(4px)}
+.hstat .v{font-size:26px;font-weight:800;letter-spacing:-.5px;line-height:1.15;font-variant-numeric:tabular-nums}
+.hstat .v small{font-size:12px;font-weight:600;margin-left:2px;opacity:.7;letter-spacing:0}
+.hstat .k{font-size:11px;color:rgba(255,255,255,.55);margin-top:5px;letter-spacing:.02em}
+.hstat:nth-child(1) .v{color:#9DB4FF}
+.hstat:nth-child(2) .v{color:#7FE7D6}
+.hstat:nth-child(3) .v{color:#FFC978}
+.hstat:nth-child(4) .v{color:#FF9BB6}
+/* 路面动画 */
+.road{position:relative;z-index:2;margin-top:30px;height:26px}
+.road svg{width:100%;height:26px;display:block;overflow:visible}
+.road .dash{stroke-dasharray:10 14;animation:roadmove 1.6s linear infinite;opacity:.55}
+@keyframes roadmove{to{stroke-dashoffset:-48}}
+.road .car{animation:drive 5.5s ease-in-out infinite alternate}
+@keyframes drive{from{transform:translateX(0)}to{transform:translateX(360px)}}
+.hero-note{position:relative;z-index:2;font-size:11px;color:rgba(255,255,255,.42);margin-top:16px;letter-spacing:.02em}
+
+/* ============ 导航 ============ */
+nav.tabs{
+  position:sticky;top:0;z-index:100;
+  background:rgba(246,247,251,.9);backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(10,16,36,.06);
+  padding:0 0 0 16px;
+}
+.tabs .scroll{
+  display:flex;gap:6px;overflow-x:auto;padding:10px 16px 10px 0;
+  scrollbar-width:none;-ms-overflow-style:none;
+}
+.tabs .scroll::-webkit-scrollbar{display:none}
+.tabs a{
+  flex:0 0 auto;text-decoration:none;color:var(--muted);
+  font-size:12.5px;font-weight:600;padding:6px 11px;border-radius:9px;
+  border:1px solid transparent;transition:.2s;white-space:nowrap;
+}
+.tabs a.on{background:var(--ink);color:#fff;border-color:var(--ink);box-shadow:0 4px 12px rgba(10,16,36,.18)}
+.tabs a:active{transform:scale(.96)}
+
+/* ============ 通用段落 ============ */
+main{padding:0 20px 60px}
+section{scroll-margin-top:62px}
+.ch{display:flex;gap:13px;align-items:baseline;margin:42px 0 18px}
+.ch .num{
+  font-size:12px;font-weight:800;color:var(--accent);letter-spacing:.1em;
+  font-variant-numeric:tabular-nums;flex:0 0 auto;padding-top:3px;
+}
+.ch h2{margin:0;font-size:21px;line-height:1.35;font-weight:800;letter-spacing:-.2px}
+.ch .kicker{display:block;font-size:11.5px;font-weight:500;color:var(--muted);margin-top:5px;letter-spacing:.03em}
+p{margin:0 0 14px;color:var(--ink-2)}
+p.lead{font-size:15.5px;line-height:1.85;color:#2A3450}
+.muted{color:var(--muted)}
+.small{font-size:12.5px;line-height:1.7}
+b,strong{font-weight:700;color:var(--ink)}
+.hl{background:linear-gradient(180deg,transparent 62%,rgba(47,91,255,.18) 62%);font-weight:700;color:var(--ink)}
+
+/* 标签 */
+.tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 6px;border-radius:5px;vertical-align:1px;letter-spacing:.03em}
+.t-fact{background:var(--accent-soft);color:#1F45C9}
+.t-claim{background:var(--amber-soft);color:#9A6200}
+.t-idx{background:#EFEAFE;color:#5B3FC4}
+.t-judge{background:var(--teal-soft);color:#00786A}
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0 18px;font-size:11px;color:var(--muted)}
+
+/* 卡片 */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--shadow);margin-bottom:12px}
+.card.tight{padding:15px}
+.card-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.card-h h3{margin:0;font-size:16px;font-weight:800;letter-spacing:-.1px}
+.card h4{margin:16px 0 8px;font-size:13.5px;font-weight:800;color:var(--ink-2)}
+.card h4:first-child{margin-top:0}
+.card ul{margin:0;padding-left:17px}
+.card li{margin:6px 0;font-size:14px;line-height:1.7;color:var(--ink-2)}
+.card li::marker{color:var(--accent)}
+
+/* 结论卡 */
+.concl{counter-reset:c}
+.concl .item{
+  position:relative;background:var(--card);border:1px solid var(--line);border-radius:14px;
+  padding:15px 16px 15px 48px;margin-bottom:10px;box-shadow:0 3px 14px rgba(10,16,36,.04);
+}
+.concl .item::before{
+  counter-increment:c;content:counter(c,decimal-leading-zero);
+  position:absolute;left:15px;top:15px;
+  font-size:12px;font-weight:800;color:var(--accent);font-variant-numeric:tabular-nums;
+}
+.concl .item h3{margin:0 0 6px;font-size:14.5px;font-weight:800;line-height:1.5}
+.concl .item p{margin:0;font-size:13px;line-height:1.7;color:var(--muted)}
+
+/* 城市卡 */
+.city{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:0;overflow:hidden;margin-bottom:14px;box-shadow:var(--shadow)}
+.city .top{padding:16px 18px 14px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#FBFCFE,#fff)}
+.city .name{display:flex;align-items:center;gap:9px;font-size:17px;font-weight:800}
+.city .name span{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.04em}
+.city .st{display:inline-block;margin-top:8px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:100px}
+.st-go{background:var(--teal-soft);color:#00786A}
+.st-test{background:var(--accent-soft);color:#1F45C9}
+.st-road{background:var(--amber-soft);color:#9A6200}
+.city .body{padding:14px 18px 16px}
+.kv{display:flex;gap:10px;padding:7px 0;border-bottom:1px dashed rgba(10,16,36,.07);font-size:13px}
+.kv:last-child{border-bottom:0}
+.kv .k{flex:0 0 62px;color:var(--muted);font-size:12px}
+.kv .v{flex:1;color:var(--ink-2);line-height:1.65}
+
+/* 阶梯对比 */
+.ladder{display:grid;gap:8px;margin:16px 0 6px}
+.step{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:13px;padding:13px 15px}
+.step .dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+.step .txt{flex:1;font-size:12.5px;color:var(--muted);line-height:1.6}
+.step .txt b{display:block;font-size:14px;color:var(--ink);margin-bottom:2px}
+.step.d1{border-left:3px solid #2F5BFF}
+.step.d2{border-left:3px solid #00B39B}
+.step.d3{border-left:3px solid #F5A524}
+
+/* 表格 */
+.tablewrap{overflow-x:auto;border-radius:14px;border:1px solid var(--line);background:#fff;box-shadow:var(--shadow);margin-bottom:14px}
+table{border-collapse:collapse;width:100%;font-size:12.5px;min-width:420px}
+th,td{padding:11px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+th{background:#F9FAFD;font-weight:800;font-size:11.5px;color:var(--muted);letter-spacing:.03em;white-space:nowrap}
+td{color:var(--ink-2);line-height:1.6}
+tr:last-child td{border-bottom:0}
+
+/* 玩家列表 */
+.player{background:#fff;border:1px solid var(--line);border-radius:14px;margin-bottom:9px;box-shadow:0 3px 12px rgba(10,16,36,.04);overflow:hidden}
+.player summary{
+  list-style:none;cursor:pointer;padding:14px 16px;
+  display:flex;align-items:center;gap:10px;
+}
+.player summary::-webkit-details-marker{display:none}
+.player .nm{font-size:14.5px;font-weight:800;flex:1}
+.player .arrow{transition:.25s;color:#A6ADC0;font-size:12px}
+.player[open] .arrow{transform:rotate(180deg)}
+.player .inner{padding:0 16px 15px;font-size:13px;color:var(--muted);line-height:1.75;border-top:1px dashed var(--line);padding-top:12px}
+.player .inner b{color:var(--ink-2)}
+
+/* 时间轴 */
+.tl{position:relative;padding-left:26px;margin:18px 0}
+.tl::before{content:"";position:absolute;left:7px;top:6px;bottom:8px;width:2px;background:linear-gradient(180deg,#2F5BFF,#00B39B 55%,#E6E9F2)}
+.tl .it{position:relative;margin-bottom:18px}
+.tl .it::before{
+  content:"";position:absolute;left:-24px;top:5px;width:9px;height:9px;border-radius:50%;
+  background:#fff;border:2px solid var(--accent);
+}
+.tl .yr{font-size:12px;font-weight:800;color:var(--accent);letter-spacing:.05em;font-variant-numeric:tabular-nums}
+.tl .tx{font-size:13.5px;line-height:1.7;color:var(--ink-2);margin-top:3px}
+.tl .it.hot::before{background:var(--accent);box-shadow:0 0 0 4px rgba(47,91,255,.16)}
+
+/* 图表 */
+.chart{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:18px 16px 14px;box-shadow:var(--shadow);margin-bottom:14px}
+.chart .ct{font-size:13.5px;font-weight:800;margin-bottom:2px}
+.chart .cs{font-size:11px;color:var(--muted);margin-bottom:16px}
+.bars{display:grid;gap:14px}
+.bar-row .bl{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:6px}
+.bar-row .bl b{font-variant-numeric:tabular-nums}
+.bar-row .bl span{color:var(--muted);font-size:12px}
+.track{height:12px;border-radius:100px;background:#F0F2F8;overflow:hidden}
+.fill{height:100%;width:0;border-radius:100px;transition:width 1.15s cubic-bezier(.2,.8,.2,1)}
+.f1{background:linear-gradient(90deg,#2F5BFF,#6E8CFF)}
+.f2{background:linear-gradient(90deg,#00B39B,#5FD9C8)}
+.f3{background:linear-gradient(90deg,#F5A524,#FFC978)}
+.f4{background:linear-gradient(90deg,#FF5A8A,#FF9BB6)}
+.chart .foot{font-size:10.5px;color:#8B92A6;margin-top:14px;line-height:1.6}
+
+/* 柱状图（规模） */
+.cols{display:flex;align-items:flex-end;gap:12px;height:150px;padding-top:8px}
+.col{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%}
+.col .cv{font-size:12px;font-weight:800;margin-bottom:6px;font-variant-numeric:tabular-nums;color:var(--ink)}
+.col .cb{width:100%;max-width:56px;border-radius:8px 8px 3px 3px;height:0;transition:height 1.2s cubic-bezier(.2,.8,.2,1);position:relative}
+.col .cb::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(180deg,rgba(255,255,255,.35),transparent 55%)}
+.col .cl{font-size:11px;color:var(--muted);margin-top:8px}
+.axis{display:flex;justify-content:space-between;font-size:10px;color:#A3A9BA;border-top:1px dashed rgba(10,16,36,.1);margin-top:10px;padding-top:8px}
+
+/* 数字条 */
+.statgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 16px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:0 3px 14px rgba(10,16,36,.04)}
+.stat .v{font-size:24px;font-weight:800;letter-spacing:-.6px;font-variant-numeric:tabular-nums;line-height:1.1}
+.stat .v small{font-size:11px;font-weight:700;margin-left:2px;color:var(--muted)}
+.stat .k{font-size:11.5px;color:var(--muted);margin-top:6px;line-height:1.5}
+
+/* UE 公式 */
+.formula{
+  background:linear-gradient(160deg,#0E1730,#1B2A55);color:#DCE5FF;
+  border-radius:14px;padding:16px;font-size:12.5px;line-height:2;margin:14px 0;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;overflow-x:auto;
+}
+.formula .op{color:#7FE7D6}
+.formula .neg{color:#FF9BB6}
+
+/* 双栏利弊 */
+.vs{display:grid;gap:10px;margin:14px 0}
+.vs .box{border-radius:14px;padding:15px 16px;border:1px solid var(--line);background:#fff}
+.vs .box.good{background:linear-gradient(180deg,#F2FCFA,#fff);border-color:rgba(0,179,155,.22)}
+.vs .box.bad{background:linear-gradient(180deg,#FFF7F9,#fff);border-color:rgba(255,90,138,.18)}
+.vs .box h4{margin:0 0 8px;font-size:13px;font-weight:800;display:flex;align-items:center;gap:6px}
+.vs .box.good h4{color:#00786A}
+.vs .box.bad h4{color:#C0305A}
+.vs .box ul{margin:0;padding-left:16px}
+.vs .box li{font-size:12.5px;line-height:1.75;color:var(--ink-2);margin:5px 0}
+
+/* 提示条 */
+.note{
+  display:flex;gap:10px;background:var(--accent-soft);border-radius:12px;
+  padding:13px 14px;font-size:12.5px;line-height:1.7;color:#22377A;margin:14px 0;
+}
+.note b{color:#14245C}
+.note.warn{background:var(--amber-soft);color:#7A4E00}
+.note.warn b{color:#5E3C00}
+.note i{font-style:normal;font-size:14px;line-height:1.4}
+
+/* 来源 */
+details.src{background:#fff;border:1px solid var(--line);border-radius:14px;margin-bottom:9px;overflow:hidden}
+details.src summary{cursor:pointer;list-style:none;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;font-size:13.5px;font-weight:700}
+details.src summary::-webkit-details-marker{display:none}
+details.src summary::after{content:"+";color:#A6ADC0;font-weight:400;font-size:16px}
+details.src[open] summary::after{content:"−"}
+details.src .list{padding:0 16px 14px;border-top:1px dashed var(--line);padding-top:10px}
+details.src ol{margin:0;padding-left:18px}
+details.src li{font-size:12px;line-height:1.7;color:var(--muted);margin:5px 0}
+details.src a{color:#2F5BFF;text-decoration:none;word-break:break-all}
+
+/* 页脚 */
+footer{padding:34px 24px 44px;text-align:center;background:#fff;border-top:1px solid var(--line)}
+footer .fl{font-size:12.5px;font-weight:800;letter-spacing:.05em;color:var(--ink)}
+footer .fs{font-size:11px;color:#9AA1B4;margin-top:8px;line-height:1.8}
+footer .dots{display:flex;justify-content:center;gap:5px;margin-top:16px}
+footer .dots i{width:5px;height:5px;border-radius:50%;background:#D7DCE8}
+footer .dots i:first-child{background:var(--accent)}
+
+/* 动效 */
+.rv{opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.8,.2,1)}
+.rv.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){
+  .rv{opacity:1;transform:none;transition:none}
+  *{animation:none!important}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+<div id="prog"></div>
+<div class="app">
+
+<!-- ================= 封面 ================= -->
+<header class="hero">
+  <div class="hero-top">
+    <div class="badge"><i></i>深度调研 · 2026.10</div>
+    <div class="hero-date">数据截至 10-19</div>
+  </div>
+  <div class="eyebrow">ROBOTAXI · 下沉市场</div>
+  <h1 class="title">县城里的<em>无人车</em><br>还差几步？</h1>
+  <p class="hero-sub">当武汉的单车账本刚刚转正，中国 1800 多个县城仍在等待第一辆无人出租车。这份报告用公开数据回答：三四线到底落地了没有、账能不能算平、谁在真正下注。</p>
+  <div class="hero-meta">
+    <span class="chip">阳泉 · 桐乡 · 芜湖</span>
+    <span class="chip">7 位玩家动向</span>
+    <span class="chip">单车经济模型拆解</span>
+    <span class="chip">安徽专节</span>
+  </div>
+  <div class="hstats">
+    <div class="hstat"><div class="v" data-count="15" data-suffix="+">0<small>城</small></div><div class="k">萝卜快跑正式服务城市</div></div>
+    <div class="hstat"><div class="v" data-count="3">0</div><div class="k">三四线有实质进展城市</div></div>
+    <div class="hstat"><div class="v" data-count="20.46" data-dec="2">0</div><div class="k">RT6 整车物料成本 / 万元</div></div>
+    <div class="hstat"><div class="v" data-count="2" data-prefix="晚 " data-suffix="–3年">0</div><div class="k">商业化落后一线约</div></div>
+  </div>
+  <div class="road">
+    <svg viewBox="0 0 400 26" fill="none" aria-hidden="true">
+      <line x1="0" y1="20" x2="400" y2="20" stroke="rgba(255,255,255,.28)" stroke-width="1.5"/>
+      <line class="dash" x1="0" y1="20" x2="400" y2="20" stroke="#7FE7D6" stroke-width="2"/>
+      <g class="car">
+        <rect x="6" y="6" width="26" height="11" rx="4" fill="#7FE7D6" opacity=".9"/>
+        <rect x="11" y="3" width="14" height="6" rx="3" fill="#9DB4FF" opacity=".85"/>
+        <circle cx="12" cy="18" r="2.4" fill="#0A1024" stroke="#7FE7D6" stroke-width="1.4"/>
+        <circle cx="26" cy="18" r="2.4" fill="#0A1024" stroke="#7FE7D6" stroke-width="1.4"/>
+      </g>
+    </svg>
+  </div>
+  <div class="hero-note">数据来源：政府公告、券商研报、企业财报电话会及公开报道 · 详见文末</div>
+</header>
+
+<!-- ================= 导航 ================= -->
+<nav class="tabs">
+  <div class="scroll">
+    <a href="#s1" class="on">结论</a>
+    <a href="#s2">落地现状</a>
+    <a href="#s3">玩家打法</a>
+    <a href="#s4">政策牌照</a>
+    <a href="#s5">单车账本</a>
+    <a href="#s6">市场规模</a>
+    <a href="#s7">下沉阻力</a>
+    <a href="#s8">安徽专节</a>
+    <a href="#s9">观察窗口</a>
+  </div>
+</nav>
+
+<main>
+
+<!-- ================= 01 结论 ================= -->
+<section id="s1">
+  <div class="ch">
+    <div class="num">01</div>
+    <h2>七条核心结论<span class="kicker">先看结论，再看证据</span></h2>
+  </div>
+
+  <div class="concl">
+    <div class="item rv"><h3>三四线真实落地仍极少，主战场在一线、新一线与海外</h3><p>公开可查的实质性落地仅阳泉（商业化运营）、桐乡/乌镇（载人测试）、芜湖（路测）。百度、小马、文远的扩张重心仍是北上广深、武汉、重庆与中东、欧洲。</p></div>
+    <div class="item rv"><h3>单车经济拐点已在中等票价城市验证，利好下沉</h3><p>萝卜快跑在武汉实现 UE 盈亏平衡，武汉票价较一线低约 30%；小马智行在广州、深圳单车盈利转正。票价更低的三四线"理论上可行"，前提是订单密度达标。</p></div>
+    <div class="item rv"><h3>下沉主流模式是"技术方＋本地出行/国资平台"</h3><p>小马智行×如祺出行：技术方出系统，出行方出车队资产与运营。曹操"十年百城千亿"、哈啰"深耕十余城"均为规划口径，尚无三四线签约实锤。</p></div>
+    <div class="item rv"><h3>国家连续释放鼓励信号，三四线地方立法基本空白</h3><p>首批 L3 车型准入已批，GB 44721—2026 将于 2027 年 7 月实施，道交法修订设自动驾驶专章。但出台专项条例的仍是头部城市，三四线中仅阳泉有市级管理办法。</p></div>
+    <div class="item rv"><h3>市场预测分歧大、方向一致：2030 年前后放量</h3><p>高盛预测全球市场 2030 年 562 亿美元、2035 年 4152 亿美元；摩根士丹利预计 2030 年 Robotaxi 占中国出租车＋网约车车队 8%。下沉专项预测尚属空白。</p></div>
+    <div class="item rv"><h3>拖慢下沉的因素：订单密度 ＞ 就业维稳 ＞ 安全监管 ＞ 基建成本 ＞ 技术限制</h3><p>经济账与政治账才是地方政府决策核心，冬季与复杂路况等技术问题反而最不主要。</p></div>
+    <div class="item rv"><h3>安徽：合肥独跑，芜湖路测，其余三四线尚无试点</h3><p>合肥开放测试路段 1405.2 公里；芜湖处于奇瑞路测阶段；铜陵停留于产业链招商；蚌埠、安庆未见公开试点信息。</p></div>
+  </div>
+</section>
+
+<!-- ================= 02 落地现状 ================= -->
+<section id="s2">
+  <div class="ch">
+    <div class="num">02</div>
+    <h2>落地现状：三座城，三种阶段<span class="kicker">截至 2026 年 10 月</span></h2>
+  </div>
+  <p class="lead">在萝卜快跑"超 15 个中国城市提供正式服务"的名单里，阳泉是唯一的传统意义三四线城市。真正有实质进展的三四线，一共三座。</p>
+
+  <div class="city rv">
+    <div class="top">
+      <div class="name">阳泉 <span>山西 · 地级市</span></div>
+      <span class="st st-go">商业化运营（示范）</span>
+    </div>
+    <div class="body">
+      <div class="kv"><div class="k">运营方</div><div class="v">百度萝卜快跑</div></div>
+      <div class="kv"><div class="k">进程</div><div class="v">2021 年签约 Apollo Park；全国第三个获批无人化自动驾驶出行服务的城市；2026 年 10 月新一代颐驰牌 RT6 上路测试</div></div>
+      <div class="kv"><div class="k">定价</div><div class="v">参照专车水平、已向部门报备；高新区覆盖政务区、居住区、产业园区</div></div>
+      <div class="kv"><div class="k">特点</div><div class="v">全国首个车城网数字经济示范运营基地＋交通强国试点＋车路协同示范区（10 公里城市道路、13 公里高速测试段），"产业示范"属性强于市场化扩张</div></div>
+    </div>
+  </div>
+
+  <div class="city rv">
+    <div class="top">
+      <div class="name">桐乡 / 乌镇 <span>浙江 · 县级市</span></div>
+      <span class="st st-test">载人测试运营</span>
+    </div>
+    <div class="body">
+      <div class="kv"><div class="k">运营方</div><div class="v">百度萝卜快跑</div></div>
+      <div class="kv"><div class="k">进程</div><div class="v">2024 年前已列入萝卜快跑 11 城载人测试运营名单</div></div>
+      <div class="kv"><div class="k">基建</div><div class="v">桐乡为"全国首个车路协同全域覆盖城市"；乌镇智算中心已建成约 500P 算力</div></div>
+    </div>
+  </div>
+
+  <div class="city rv">
+    <div class="top">
+      <div class="name">芜湖 <span>安徽 · 地级市</span></div>
+      <span class="st st-road">公开道路路测</span>
+    </div>
+    <div class="body">
+      <div class="kv"><div class="k">运营方</div><div class="v">奇瑞</div></div>
+      <div class="kv"><div class="k">进程</div><div class="v">2026 年 10 月，无驾驶位形态 Robotaxi 在芜湖街头路测；官方未给出公众开放时间表</div></div>
+      <div class="kv"><div class="k">后续</div><div class="v">10 月 20 日奇瑞全球创新大会预告发布"为全球而生的原生前装 Robotaxi"</div></div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span><span class="tag t-fact">事实</span> 官方/媒体可核实</span>
+    <span><span class="tag t-claim">宣称</span> 企业口径</span>
+    <span><span class="tag t-idx">指数</span> 自媒体交叉参考</span>
+    <span><span class="tag t-judge">研判</span> 本报告推论</span>
+  </div>
+
+  <div class="card">
+    <h4>与一线／新一线的差距在哪</h4>
+    <div class="ladder">
+      <div class="step d1"><span class="dot" style="background:#2F5BFF"></span><div class="txt"><b>一线：牌照与立法最完备</b>深圳 2022 年率先立法；上海 2023 年条例＋收费试点；北京亦庄 2024 年 60 平方公里、800+ 辆；广州南沙 2025 年 12 月发布道路开放指南；小马在广深单车盈利转正。</div></div>
+      <div class="step d2"><span class="dot" style="background:#00B39B"></span><div class="txt"><b>新一线：规模验证期</b>武汉为全球最大全无人商业化运营城市，2024 年单日单车峰值超 20 单，2026 年 UE 盈亏平衡；重庆永川全域开放 1385 公里测试道路。</div></div>
+      <div class="step d3"><span class="dot" style="background:#F5A524"></span><div class="txt"><b>三四线：示范与测试为主</b>仅阳泉、桐乡/乌镇有实质运营，芜湖在测。以商业化运营口径计，整体落后一线／新一线约 2—3 年。</div></div>
+    </div>
+    <p class="small muted" style="margin:8px 0 0">口径说明：苏州、佛山、东莞、长沙、南京、成都、合肥等属新一线/二线，不计入三四线。未找到 2025—2026 年头部平台新签约三四线城市的公开实锤。</p>
+  </div>
+</section>
+
+<!-- ================= 03 玩家 ================= -->
+<section id="s3">
+  <div class="ch">
+    <div class="num">03</div>
+    <h2>玩家与下沉策略<span class="kicker">喊"百城"的只有一家</span></h2>
+  </div>
+  <p>明确提出"百城"量级目标的仅曹操出行；其余头部玩家公开口径均围绕一线/新一线与海外。三四线下沉更多停留在"合作模式预留接口"，而非明确时间表。</p>
+
+  <details class="player" open>
+    <summary><span class="nm">百度 / 萝卜快跑</span><span class="tag t-claim">宣称</span><span class="arrow">▾</span></summary>
+    <div class="inner">李彦宏称 2025 年为"重要扩张之年"，将通过移动服务运营商、出租车公司及第三方车队运营方合作加速落地。实际重心在国内一线/新一线＋海外：截至 2026 年 8 月全球 28 城，迪拜完全无人商业运营并接入 Uber，伦敦、瑞士测试，香港东涌公众试乘。管理层称曾在票价相对较低的市场实现单车经济盈亏平衡。</div>
+  </details>
+
+  <details class="player">
+    <summary><span class="nm">小马智行</span><span class="tag t-claim">宣称</span><span class="arrow">▾</span></summary>
+    <div class="inner">目标 2026 年底全球车队超 3500 辆、覆盖 20 余城，海外规划超 4000 辆。国内聚焦广州、北京、上海、深圳、佛山；2025 年 3 月拿下深圳南山首个全无人商业化许可；2025 年 6 月与深圳西湖集团合作建规模化车队；2026 年 3 月向如祺出行交付首批超百辆第七代 Robotaxi。</div>
+  </details>
+
+  <details class="player">
+    <summary><span class="nm">文远知行</span><span class="tag t-claim">宣称</span><span class="arrow">▾</span></summary>
+    <div class="inner">2026 年 5 月与 Uber 扩大合作，未来五年新增 15 座国际城市；2026 年 3 月 Robotaxi 接入微信"出行服务"打车入口（广州）；欧洲马德里、苏黎世、丹麦推进中。国内运营集中广州、深圳、北京、南京。</div>
+  </details>
+
+  <details class="player">
+    <summary><span class="nm">滴滴自动驾驶</span><span class="tag t-fact">事实</span><span class="arrow">▾</span></summary>
+    <div class="inner">与广汽埃安联合打造 R2 车型，2026 年 1 月量产交付，首批获广州道路测试牌照，在北京、广州示范区常态化载客测试；2025 年下半年完成约 20 亿元融资。</div>
+  </details>
+
+  <details class="player">
+    <summary><span class="nm">哈啰 Robotaxi</span><span class="tag t-claim">事实宣称</span><span class="arrow">▾</span></summary>
+    <div class="inner">2025 年 6 月联合蚂蚁集团、宁德时代成立上海造父智能科技（首期出资超 30 亿元）；2026 年 9 月完成约 1 亿美元融资，投后估值近 30 亿美元。规划 2026—2027 年"集中深耕十余个城市、优先高密度区域投放"，2027 年全球部署万辆级——未点名三四线。</div>
+  </details>
+
+  <details class="player">
+    <summary><span class="nm">曹操出行</span><span class="tag t-claim">事实宣称</span><span class="arrow">▾</span></summary>
+    <div class="inner">2025 年 2 月在苏州、杭州上线曹操智行平台；2025 年 12 月发布 Robotaxi 2.0 全栈方案，提出"十年百城千亿"——唯一喊出"百城"量级的玩家，但尚无三四线签约实锤。</div>
+  </details>
+
+  <details class="player">
+    <summary><span class="nm">T3 出行</span><span class="tag t-fact">事实</span><span class="arrow">▾</span></summary>
+    <div class="inner">截至 2025 年底接入超 300 辆 Robotaxi，在南京、苏州开展 L4 道路测试，有人＋无人混合运营；2026 年 4 月向港交所递表，招股书称 2025 年实现盈利、覆盖 194 城。</div>
+  </details>
+
+  <h4 style="font-size:14px;margin:22px 0 10px;font-weight:800">四种常见落地模式</h4>
+  <div class="card tight">
+    <div class="kv"><div class="k">主流</div><div class="v"><b>技术方 × 本地出行平台</b><br>小马（系统）＋如祺（车队资产、安全、调度），轻资产可复制，是下沉最可能路径——借用本地平台合规资质与运力网络</div></div>
+    <div class="kv"><div class="k">共建</div><div class="v"><b>技术方 × 地方国资/产业园</b><br>百度 Apollo Park 落地阳泉，地方以场景、路权、产业基金换技术落地</div></div>
+    <div class="kv"><div class="k">导流</div><div class="v"><b>技术方 × 全国/国际平台</b><br>文远×Uber、萝卜×Uber（迪拜）、文远接入微信出行入口，解决获客与订单密度</div></div>
+    <div class="kv"><div class="k">自营</div><div class="v"><b>车企系自研自营</b><br>滴滴×广汽埃安、奇瑞原生前装，天然具备渠道与售后网络</div></div>
+  </div>
+</section>
+
+<!-- ================= 04 政策 ================= -->
+<section id="s4">
+  <div class="ch">
+    <div class="num">04</div>
+    <h2>政策与牌照：国家开门，地方发牌<span class="kicker">三四线的制度成本更高</span></h2>
+  </div>
+  <p>"鼓励试点、包容审慎"的基调对下沉是利好；但牌照审批权、道路开放范围、事故责任认定细则均在地方。没有专项管理办法的城市，企业落地只能"一事一议"。</p>
+
+  <div class="tl">
+    <div class="it"><div class="yr">2022</div><div class="tx"><b>深圳率先立法</b>《深圳经济特区智能网联汽车管理条例》，首部 L3+ 准入与责任认定立法；上海 2023 年出台发展条例并率先启动商业化收费运营试点。</div></div>
+    <div class="it"><div class="yr">2023.12</div><div class="tx"><b>安徽出台全国首部省级新能源汽车产业专项立法</b>《安徽省新能源汽车产业集群发展条例》，明确支持自动驾驶、车联网技术研发。</div></div>
+    <div class="it"><div class="yr">2024</div><div class="tx"><b>试点政策扩围至 51+ 城市</b>五部门"车路云一体化"应用试点 20 城（含合肥、十堰）；武汉 12 月出台发展条例；重庆发放全国首张 L3 专用号牌。</div></div>
+    <div class="it hot"><div class="yr">2025.12</div><div class="tx"><b>工信部批准首批 L3 车型准入</b>长安深蓝 SL03 L3 版、北汽极狐阿尔法 S L3 版获附条件许可，分别限定重庆、北京指定路段。</div></div>
+    <div class="it"><div class="yr">2026</div><div class="tx"><b>超 50 城允许公开道路测试，至少 10 城已有商业运营</b>GB 44721—2026 获批；道交法修订草案设"自动驾驶汽车的特别规定"专章，明确系统激活状态下车企担责；"十五五"规划将智能网联汽车与智慧交通列入 109 项重大工程。</div></div>
+    <div class="it hot"><div class="yr">2027.07.01</div><div class="tx"><b>GB 44721—2026 正式实施</b>国标落地后 L3 量产上路提速，是观察三四线落地的关键时间窗口。</div></div>
+  </div>
+
+  <div class="note">
+    <i>📍</i>
+    <div><b>三四线的政策现状：</b>阳泉是唯一出台市级《智能网联汽车管理办法》的三四线城市，明确测试牌照申领与备案流程；桐乡实现车路协同全域覆盖。其余三四线未见专项立法或牌照发放的公开报道。<br><b>结论：市级管理办法＋国资产业载体，是三四线落地的前置条件。</b></div>
+  </div>
+</section>
+
+<!-- ================= 05 经济模型 ================= -->
+<section id="s5">
+  <div class="ch">
+    <div class="num">05</div>
+    <h2>单车账本：2026 年刚刚转正<span class="kicker">UE 盈亏平衡的元年</span></h2>
+  </div>
+  <p class="lead">萝卜快跑（武汉）、小马智行（广州、深圳）相继宣布单车盈利转正，文远称阿布扎比"即将实现"。整车成本快速下探是底层变量——2026 年 Robotaxi 整车物料成本已降至 <span class="hl">20—25 万元</span>区间。</p>
+
+  <div class="chart rv">
+    <div class="ct">主流 Robotaxi 单车成本</div>
+    <div class="cs">单位：万元人民币 · 2025—2026 年公开数据</div>
+    <div class="bars">
+      <div class="bar-row"><div class="bl"><span>百度 RT6</span><b>20.46 万</b></div><div class="track"><div class="fill f1" data-w="68"></div></div></div>
+      <div class="bar-row"><div class="bl"><span>小马智行 第七代</span><b>约 27 万</b></div><div class="track"><div class="fill f2" data-w="90"></div></div></div>
+      <div class="bar-row"><div class="bl"><span>文远知行</span><b>约 30 万</b></div><div class="track"><div class="fill f3" data-w="100"></div></div></div>
+    </div>
+    <div class="foot">RT6 较第五代降约 6 成，被称为 L4 车型中单位成本全球最低；小马七代自动驾驶套件 BOM 较六代降 70%（激光雷达降 80%）；文远为指数口径。下一代车型目标再降 20—30%。对比：Waymo 改装车约 20 万美元级；激光雷达单颗已降至 1500 元级别（2020 年近 10 万元）。</div>
+  </div>
+
+  <div class="statgrid">
+    <div class="stat"><div class="v">20<small>单/日</small></div><div class="k">武汉单车日订单峰值（2024）</div></div>
+    <div class="stat"><div class="v">2.4<small>万单</small></div><div class="k">武汉全城单日订单（2026.10 · 指数）</div></div>
+    <div class="stat"><div class="v">1.2<small>万单</small></div><div class="k">深圳南山/坪山日均（200+ 辆）</div></div>
+    <div class="stat"><div class="v">−30<small>%</small></div><div class="k">武汉平均票价 vs 一线</div></div>
+  </div>
+
+  <div class="formula">
+    UE <span class="op">=</span> 客单价 × 日单量 × 利用率<br>
+    <span class="op">−</span> ( 折旧 <span class="op">+</span> 能耗 <span class="op">+</span> 运维 <span class="op">+</span> 保险 <span class="op">+</span> 远程安全员分摊 )<br>
+    <span class="neg">三四线的难点：左边第二项（订单密度）先天不足</span>
+  </div>
+
+  <div class="vs">
+    <div class="box good">
+      <h4>✓ 有利于三四线</h4>
+      <ul>
+        <li>路网简单、拥堵轻，技术落地与安全验证更容易</li>
+        <li>场站、充电、安全员/运维人力成本低于一线</li>
+        <li>地方政府招商意愿强，路权、场景、产业配套谈判空间大</li>
+      </ul>
+    </div>
+    <div class="box bad">
+      <h4>✕ 不利于三四线（更关键）</h4>
+      <ul>
+        <li><b>订单密度不足是核心矛盾</b>，日单量难达武汉水平</li>
+        <li>客单价更低：起步价多为 5—6 元（一线 13—14 元），网约车价格亦低 20—40%</li>
+        <li>高精地图与路侧设施需前置投入，低密度城市分摊更差</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="note warn">
+    <i>⏱</i>
+    <div><b>盈利时间点研判：</b>一线/新一线 2026—2027 年进入单城经营性盈亏平衡验证期；三四线受订单密度约束，整体盈利时点大概率晚 2—3 年（2028—2030 年），且高度依赖成本再降 20—30% 与"无图化"降低进驻成本。</div>
+  </div>
+</section>
+
+<!-- ================= 06 市场规模 ================= -->
+<section id="s6">
+  <div class="ch">
+    <div class="num">06</div>
+    <h2>市场规模：口径差很大，方向一致<span class="kicker">2030 年前后进入放量期</span></h2>
+  </div>
+
+  <div class="chart rv">
+    <div class="ct">全球 Robotaxi 车队规模预测</div>
+    <div class="cs">Macquarie · 单位：万辆 · 对数刻度</div>
+    <div class="cols">
+      <div class="col"><div class="cv">0.7 万</div><div class="cb f1" data-h="30" style="background:linear-gradient(180deg,#6E8CFF,#2F5BFF)"></div><div class="cl">2025</div></div>
+      <div class="col"><div class="cv">50 万</div><div class="cb f1" data-h="78" style="background:linear-gradient(180deg,#5FD9C8,#00B39B)"></div><div class="cl">2030</div></div>
+      <div class="col"><div class="cv">300 万</div><div class="cb f1" data-h="140" style="background:linear-gradient(180deg,#FFC978,#F5A524)"></div><div class="cl">2035</div></div>
+    </div>
+    <div class="axis"><span>2025</span><span>对数刻度 · 各年量级差异过大</span><span>2035</span></div>
+    <div class="foot">高盛车队口径与此一致：全球从 2025 年约 7000 辆增至 2035 年约 600 万辆（另一机构口径，数值更高）。</div>
+  </div>
+
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>机构</th><th>预测内容</th><th>时间</th></tr></thead>
+      <tbody>
+        <tr><td><b>高盛</b></td><td>全球 2030 年 <b>562 亿美元</b>、2035 年 <b>4152 亿美元</b>；2035 年中国占约 25%（1075 亿美元）</td><td>2026-10</td></tr>
+        <tr><td><b>摩根士丹利</b></td><td>2030 年 L4+ Robotaxi 占中国出租车＋网约车车队 <b>8%</b></td><td>2025-09</td></tr>
+        <tr><td><b>Macquarie</b></td><td>全球车队 0.7 万 → 50 万 → 300 万辆；2035 年全球交易总额 800—4650 亿美元</td><td>2026-02</td></tr>
+        <tr><td><b>Fortune BI</b></td><td>2025 年 6.1 亿 → 2034 年 963.1 亿美元，CAGR 71.9%</td><td>2026-09</td></tr>
+        <tr><td><b>麦肯锡</b></td><td>2030 年中国自动驾驶汽车与出行服务收入超 <b>5000 亿美元</b></td><td>较早</td></tr>
+        <tr><td><b>IHS Markit</b></td><td>2030 年中国共享出行 2.25 万亿元，Robotaxi 至少占 50%</td><td>2021</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="small muted">注：以上均为全球或全国口径。针对三四线"下沉市场"的专项渗透预测，公开渠道暂未找到。可参考的间接信号是 T3 招股书——覆盖 194 城、2025 年盈利，说明出行平台的下沉网络已就绪，Robotaxi 可借道混合派单下沉。</p>
+
+  <div class="card tight">
+    <h4>2026 年车队规模目标（企业宣称合计约 8000 辆）</h4>
+    <div class="kv"><div class="k">小马</div><div class="v">全球 3500 辆</div></div>
+    <div class="kv"><div class="k">文远</div><div class="v">2000—3000 辆</div></div>
+    <div class="kv"><div class="k">滴滴</div><div class="v">1000—2000 辆</div></div>
+    <div class="kv"><div class="k">萝卜</div><div class="v">未公布目标，但为中国规模最大</div></div>
+  </div>
+</section>
+
+<!-- ================= 07 挑战 ================= -->
+<section id="s7">
+  <div class="ch">
+    <div class="num">07</div>
+    <h2>什么在拖慢下沉<span class="kicker">经济账 ＞ 政治账 ＞ 监管 ＞ 基建 ＞ 技术</span></h2>
+  </div>
+
+  <div class="chart rv">
+    <div class="ct">各因素对三四线落地的影响权重</div>
+    <div class="cs">综合研判 · 定性排序，非量化模型</div>
+    <div class="bars">
+      <div class="bar-row"><div class="bl"><span>订单密度不足（经济账）</span><b>最强</b></div><div class="track"><div class="fill f4" data-w="96"></div></div></div>
+      <div class="bar-row"><div class="bl"><span>就业冲击与维稳（政治账）</span><b>很强</b></div><div class="track"><div class="fill f3" data-w="80"></div></div></div>
+      <div class="bar-row"><div class="bl"><span>安全事故引发监管收紧</span><b>强</b></div><div class="track"><div class="fill f1" data-w="58"></div></div></div>
+      <div class="bar-row"><div class="bl"><span>高精地图与路侧基础设施成本</span><b>中</b></div><div class="track"><div class="fill f2" data-w="42"></div></div></div>
+      <div class="bar-row"><div class="bl"><span>冬季 / 复杂路况技术限制</span><b>较弱</b></div><div class="track"><div class="fill f1" data-w="28"></div></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h4>① 就业冲击与地方维稳 · 最现实的非技术门槛</h4>
+    <p class="small">2024 年 7 月武汉大规模投放引发司机不满：部分司机称收入被砍半、约 10%—15% 退车，市民亦吐槽"开得慢、加剧拥堵"。三四线的特殊性在于：出租车/网约车是当地重要的灵活就业"蓄水池"，司机组织化程度高、诉求直接，地方政府对群体性事件容忍度低。<b>在就业替代方案（安全员、运维、远程监控）未明确前，投放规模大概率被"严控节奏"。</b></p>
+    <h4>② 安全事故与监管收紧</h4>
+    <p class="small">2025 年 12 月 6 日，湖南株洲一辆贴有"哈啰自动驾驶"字样的测试车发生事故、将行人卷入车底，哈啰已暂停运营配合调查。海外参照：2026 年旧金山大停电期间 Waymo 因无法识别熄灭的红绿灯而停滞致拥堵。萝卜快跑披露，截至 2026 年 6 月其全无人车辆平均约 1440 万公里发生一次气囊弹出事件。<b>单起恶性事故即可能冻结牌照审批，对"一事一议"的三四线影响更大。</b></p>
+    <h4>③ 高精地图与路侧基建成本</h4>
+    <p class="small">车路云一体化需要 RSU、边缘计算、5G 前置投入，东部示范区 5G 基站密度达每平方公里 60—100 个。三四线财政能力弱，大规模路侧改造意愿与能力不足。对冲变量是"无图化"方案成熟（新石器宣称新城市部署成本降 90% 以上），若兑现将显著降低门槛。</p>
+    <h4>④ 冬季与复杂路况</h4>
+    <p class="small">北方三四线冬季冰雪、低温对传感器与电池影响大于南方一线，激光雷达在雨雪雾天气性能衰减仍是行业共性短板。但三四线路网简单、"长尾场景"少于一线老城区，技术验证反而更容易。<b>技术不是主要矛盾。</b></p>
+    <h4>其他争议</h4>
+    <p class="small">消费者接受度并不高，与企业的积极布局形成反差；低价倾销争议未定——武汉交管局曾回应萝卜快跑"未定性为营运车辆"、定价属企业市场行为，后续是否纳入价格监管尚无定论。</p>
+  </div>
+</section>
+
+<!-- ================= 08 安徽 ================= -->
+<section id="s8">
+  <div class="ch">
+    <div class="num">08</div>
+    <h2>安徽专节：合肥领跑，芜湖路测<span class="kicker">其余三四线尚无试点</span></h2>
+  </div>
+
+  <div class="statgrid">
+    <div class="stat"><div class="v">368.65<small>万辆</small></div><div class="k">2025 安徽汽车产量 · 全国第一</div></div>
+    <div class="stat"><div class="v">179.41<small>万辆</small></div><div class="k">新能源产量 · 全国第一</div></div>
+    <div class="stat"><div class="v">1405.2<small>km</small></div><div class="k">合肥开放测试路段（2026.05）</div></div>
+    <div class="stat"><div class="v">7<small>家</small></div><div class="k">整车企业：奇瑞/蔚来/大众/比亚迪/江汽/长安/汉马</div></div>
+  </div>
+
+  <div class="card">
+    <h4>合肥：省内唯一有实质进展</h4>
+    <ul>
+      <li>全国唯一集齐"换电、双智、双链、车路云一体化、车网互动、汽车流通消费改革"六大试点的城市</li>
+      <li>开放智能网联测试路段 1405.2 公里，打造骆岗公园无人驾驶示范场景</li>
+      <li>萝卜快跑开放载人测试运营；鸿蒙智行开展 L3 研发道路测试（尊界 S800、问界 M9，限定高速）</li>
+      <li>2025 年汽车产量 187.2 万辆、新能源 137.1 万辆，居全国城市第一</li>
+    </ul>
+    <p class="small muted" style="margin:10px 0 0">总体处于"测试＋示范场景"阶段，尚未进入全无人商业化运营；但政策、路权、产业链三要素齐备。</p>
+  </div>
+
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>城市</th><th>公开信息</th><th>评估</th></tr></thead>
+      <tbody>
+        <tr><td><b>芜湖</b></td><td>奇瑞 Robotaxi 公开道路路测（2026-10）；10-20 全球创新大会预告原生前装发布</td><td>车企大本营场景测试，非面向公众的运营服务</td></tr>
+        <tr><td><b>铜陵</b></td><td>2025-12 省智能网联新能源汽车产业链对接会，签约 5.54 亿元</td><td>停留于产业链招商，未见测试/运营信息</td></tr>
+        <tr><td><b>蚌埠</b></td><td>未检索到试点或公开规划</td><td>—</td></tr>
+        <tr><td><b>安庆</b></td><td>未检索到试点（定位汽车零部件集群）</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="tl">
+    <div class="it hot"><div class="yr">2027 前后 · 合肥</div><div class="tx">有望进入收费/示范运营阶段。前提是拿到全无人牌照并完成地方立法或管理办法，节奏参考武汉、重庆。</div></div>
+    <div class="it"><div class="yr">2027—2028 · 芜湖</div><div class="tx">可能在限定区域开展示范运营。依托奇瑞原生前装 Robotaxi，或先在经开区、方特/鸠兹古镇等文旅场景落地；全城服务尚早。</div></div>
+    <div class="it"><div class="yr">2028—2030 后 · 铜陵/蚌埠/安庆</div><div class="tx">才可能出现公开道路试点。前置条件：市级管理办法＋国资/产业载体＋单车成本再降 20—30%；即便出现，大概率是文旅接驳、园区通勤等低速限定场景先行。</div></div>
+  </div>
+</section>
+
+<!-- ================= 09 观察窗口 ================= -->
+<section id="s9">
+  <div class="ch">
+    <div class="num">09</div>
+    <h2>关键观察窗口<span class="kicker">接下来 12 个月看三件事</span></h2>
+  </div>
+  <div class="card" style="border-left:3px solid var(--accent)">
+    <div class="kv"><div class="k">① 2027.07</div><div class="v">GB 44721—2026 实施后 L3 量产上路情况</div></div>
+    <div class="kv"><div class="k">② 降本</div><div class="v">头部玩家下一代车型降本 20—30% 的目标是否兑现</div></div>
+    <div class="kv"><div class="k">③ 立法</div><div class="v">是否有三四线城市出台首个 Robotaxi 运营管理办法</div></div>
+  </div>
+
+  <h4 style="font-size:14px;margin:20px 0 10px;font-weight:800">未能核实 / 开放问题</h4>
+  <div class="card tight">
+    <ul>
+      <li><b>2025—2026 年新签约下沉城市：</b>未检索到公开实锤；曹操"十年百城"、哈啰"深耕十余城"均未点名具体城市</li>
+      <li><b>三四线单车日单量、客单价：</b>无公开数据，本报告按武汉数据外推</li>
+      <li><b>武汉 2025 年底 1 万辆投放计划完成度：</b>未见官方确认数据</li>
+      <li><b>下沉渗透节奏的权威预测：</b>麦肯锡、罗兰贝格、灼识均无专项公开预测</li>
+      <li><b>阳泉萝卜快跑确切投放车辆数：</b>官方回复未披露</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= 来源 ================= -->
+<section id="s10">
+  <div class="ch">
+    <div class="num">附</div>
+    <h2>资料来源<span class="kicker">按类型分组，点击展开</span></h2>
+  </div>
+
+  <details class="src">
+    <summary>官方 / 公告（2）</summary>
+    <div class="list">
+      <ol>
+        <li>阳泉市数据局 2026-10-17 官方回复（经凤凰网大风号发布）<br><a href="https://feng.ifeng.com/c/8xLdbk9upul" target="_blank" rel="noopener">feng.ifeng.com/c/8xLdbk9upul</a></li>
+        <li>《武汉市智能网联汽车发展条例》2024-12-30（长江日报）<br><a href="https://cjrb.cjn.cn/resfile/2024-12-30/5/30R05C.pdf" target="_blank" rel="noopener">cjrb.cjn.cn（PDF）</a></li>
+      </ol>
+    </div>
+  </details>
+
+  <details class="src">
+    <summary>可信媒体（14）</summary>
+    <div class="list">
+      <ol>
+        <li>36氪《1天能跑2.4万单，李彦宏低调透露萝卜快跑在武汉盈亏平衡了》2026-10-19<br><a href="https://www.36kr.com/p/3432226379959937" target="_blank" rel="noopener">36kr.com/p/3432226379959937</a></li>
+        <li>36氪《无人驾驶出租车，去哪都不方便》2026-10<br><a href="https://www.36kr.com/p/3358766219467136" target="_blank" rel="noopener">36kr.com/p/3358766219467136</a></li>
+        <li>36氪《鸿蒙智行开启的L3路测》2025-12-25<br><a href="https://www.36kr.com/p/3611818215228420" target="_blank" rel="noopener">36kr.com/p/3611818215228420</a></li>
+        <li>北京商报《自动驾驶"双雄"欧洲竞速》2026-09<br><a href="https://www.163.com/dy/article/L6O5IUEC0519DFFO.html" target="_blank" rel="noopener">163.com</a></li>
+        <li>联合新闻网《哈啰 Robotaxi 完成约 1 亿美元融资》2026-09-20<br><a href="https://udn.com/news/story/7333/9765393" target="_blank" rel="noopener">udn.com</a></li>
+        <li>羊城晚报《在挑战与机遇中前行的无人驾驶》2024-07-13<br><a href="https://ysln.ycwb.com/content/2024-07/13/content_52805120.html" target="_blank" rel="noopener">ycwb.com</a></li>
+        <li>第一财经《出租车可接快车单，多地推行"一车双价"》2026-09-30<br><a href="https://www.dzwww.com/news/yw/202610/t20261001_18174042.htm" target="_blank" rel="noopener">dzwww.com</a></li>
+        <li>大皖新闻《2026世界制造业大会｜合肥智造力量》2026-10-16<br><a href="https://540.apostaorbihouse.com/20261016/953832042.html" target="_blank" rel="noopener">apostaorbihouse.com</a></li>
+        <li>安徽日报《四项全国第一！安徽汽车产业跑出"加速度"》2026-10<br><a href="https://news.qq.com/rain/a/20261016A0CN6E00" target="_blank" rel="noopener">news.qq.com</a></li>
+        <li>凤凰网《告别"一煤独大"，阳泉靠什么"多链并进"？》2026-10-15<br><a href="https://feng.ifeng.com/c/8xEmBjtAalJ" target="_blank" rel="noopener">feng.ifeng.com</a></li>
+        <li>人人都是产品经理（巨潮WAVE）《AI出行大时代的东风渐起》2026-10-10<br><a href="https://www.woshipm.com/it/6475577.html" target="_blank" rel="noopener">woshipm.com</a></li>
+        <li>新浪《车路协同迎来量产元年？》2026-10-18<br><a href="https://k.sina.com.cn/article_7880068399_1d5b04d2f06803ccis.html" target="_blank" rel="noopener">k.sina.com.cn</a></li>
+        <li>新浪《国内消费者何时能买到L3级自动驾驶车？》2026-09<br><a href="https://k.sina.com.cn/article_7880068201_1d5b04c6906802hocy.html" target="_blank" rel="noopener">k.sina.com.cn</a></li>
+        <li>每日经济《安徽省智能网联新能源汽车产业"十五五"重点技术方向》2026-09-22<br><a href="https://cn.dailyeconomic.com/ah/2026/09/22/3731.html" target="_blank" rel="noopener">cn.dailyeconomic.com</a></li>
+      </ol>
+    </div>
+  </details>
+
+  <details class="src">
+    <summary>券商 / 咨询机构（8）</summary>
+    <div class="list">
+      <ol>
+        <li>国元证券《Robotaxi 技术、政策、商业核心突破》2026-07-15<br><a href="https://pdf.dfcfw.com/pdf/H3_AP202607151826995807_1.pdf" target="_blank" rel="noopener">dfcfw.com（PDF）</a></li>
+        <li>爱建证券《高阶智驾准入，Robotaxi 商业化提速》2025-12-23<br><a href="https://pdf.dfcfw.com/pdf/H3_AP202512231806620593_1.pdf" target="_blank" rel="noopener">dfcfw.com（PDF）</a></li>
+        <li>平安证券《萝卜快跑武汉订单量激增》2024-07-12<br><a href="https://pdf.dfcfw.com/pdf/H3_AP202407121637826126_1.pdf" target="_blank" rel="noopener">dfcfw.com（PDF）</a></li>
+        <li>高盛（经 ChosunBiz）2026-10-06<br><a href="https://biz.chosun.com/en/en-industry/2026/10/06/4MC7GI4GIFBMBFFOYFLCXA3SJE/" target="_blank" rel="noopener">biz.chosun.com</a></li>
+        <li>摩根士丹利（经 Roic.ai）2025-09<br><a href="https://www.roic.ai/news/morgan-stanley-robotaxis-to-reach-8-of-chinas-fleet-by-2030-09-12-2025" target="_blank" rel="noopener">roic.ai</a></li>
+        <li>Macquarie（经 Gasgoo）2026-02<br><a href="https://autonews.gasgoo.com/articles/news/macquarie-global-robotaxi-fleet-to-exceed-3-million-units-by-2035-2022492933029109761" target="_blank" rel="noopener">gasgoo.com</a></li>
+        <li>麦肯锡（经 eHangzhou 转引）<br><a href="https://www.ehangzhou.gov.cn/2024-09/24/c_291004.htm" target="_blank" rel="noopener">ehangzhou.gov.cn</a></li>
+        <li>IHS Markit（2021，经 China Daily）<br><a href="https://investinchina.chinadaily.com.cn/s/202111/08/WS6188e1b8498e6a12c120780e/robotaxis-to-seize-half-of-chinas-shared-mobility-market-in-2030.html" target="_blank" rel="noopener">chinadaily.com.cn</a></li>
+      </ol>
+    </div>
+  </details>
+
+  <details class="src">
+    <summary>指数 / 自媒体（仅作交叉参考，4）</summary>
+    <div class="list">
+      <ol>
+        <li>港股研究社《百度萝卜快跑驶向海外》2026-10<br><a href="https://3g.k.sohu.com/t/n1067796909" target="_blank" rel="noopener">sohu.com</a></li>
+        <li>有驾《奇瑞 Robotaxi 芜湖路测火了！》2026-10-15<br><a href="https://www.yoojia.com/article/9544890943625316389.html" target="_blank" rel="noopener">yoojia.com</a></li>
+        <li>凤凰网《2026 奇瑞全球创新大会即将启幕》2026-10-19<br><a href="https://feng.ifeng.com/c/8xLTWsiLCHC" target="_blank" rel="noopener">feng.ifeng.com</a></li>
+        <li>《北上广深等六地政策对比｜中国无人驾驶产业背后的城市竞速》2026-10-13<br><a href="https://www.718878.com/content/64784.html" target="_blank" rel="noopener">718878.com</a></li>
+      </ol>
+    </div>
+  </details>
+</section>
+
+</main>
+
+<footer>
+  <div class="fl">中国三四线城市无人出租车市场调研报告</div>
+  <div class="fs">数据截至 2026 年 10 月 19 日 · 内容整理自公开资料<br>标注"指数""宣称""研判"处不代表确定性结论</div>
+  <div class="dots"><i></i><i></i><i></i></div>
+</footer>
+
+</div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* 进度条 */
+  var prog = document.getElementById('prog');
+  function onScroll(){
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    var p = max > 0 ? Math.min(1, Math.max(0, h.scrollTop / max)) : 0;
+    prog.style.transform = 'scaleX(' + p + ')';
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  /* 数字滚动 */
+  function countUp(el){
+    if(el.dataset.done) return;
+    el.dataset.done = '1';
+    var target = parseFloat(el.dataset.count);
+    var dec = parseInt(el.dataset.dec || '0', 10);
+    var pre = el.dataset.prefix || '';
+    var suf = el.dataset.suffix || '';
+    var small = el.querySelector('small');
+    var smallHTML = small ? small.outerHTML : '';
+    if(reduce){ el.innerHTML = pre + target.toFixed(dec) + suf + smallHTML; return; }
+    var start = performance.now(), dur = 1100;
+    function tick(now){
+      var t = Math.min(1, (now - start) / dur);
+      var e = 1 - Math.pow(1 - t, 3);
+      el.innerHTML = pre + (target * e).toFixed(dec) + suf + smallHTML;
+      if(t < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  /* 入场动画 / 柱状图 / 数字 */
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(!en.isIntersecting) return;
+      var el = en.target;
+      el.classList.add('in');
+      if(el.classList.contains('chart')){
+        el.querySelectorAll('.fill').forEach(function(f){ f.style.width = f.dataset.w + '%'; });
+        el.querySelectorAll('.cb').forEach(function(c){ c.style.height = c.dataset.h + 'px'; });
+      }
+      el.querySelectorAll('[data-count]').forEach(countUp);
+      io.unobserve(el);
+    });
+  }, {threshold:0.16, rootMargin:'0px 0px -40px 0px'});
+
+  document.querySelectorAll('.rv, .chart, .statgrid').forEach(function(el, i){
+    if(el.classList.contains('rv')) el.style.transitionDelay = (Math.min(i,4)*0.05) + 's';
+    io.observe(el);
+  });
+  /* 封面数字立即执行 */
+  document.querySelectorAll('.hstat .v').forEach(function(el){ setTimeout(function(){ countUp(el); }, 480); });
+
+  /* 导航高亮 */
+  var links = Array.prototype.slice.call(document.querySelectorAll('.tabs a'));
+  var secs = links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  var nav = document.querySelector('nav.tabs');
+  var scroller = document.querySelector('.tabs .scroll');
+
+  function setActive(id){
+    links.forEach(function(a){
+      var on = a.getAttribute('href') === '#' + id;
+      a.classList.toggle('on', on);
+      if(on && scroller){
+        var r = a.getBoundingClientRect(), sr = scroller.getBoundingClientRect();
+        if(r.left < sr.left + 16 || r.right > sr.right - 16){
+          scroller.scrollLeft += (r.left - sr.left) - 24;
+        }
+      }
+    });
+  }
+  var so = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(en.isIntersecting && en.target.id) setActive(en.target.id);
+    });
+  }, {rootMargin:'-45% 0px -50% 0px'});
+  secs.forEach(function(s){ if(s) so.observe(s); });
+
+  /* 平滑跳转（补偿 sticky 高度） */
+  links.forEach(function(a){
+    a.addEventListener('click', function(e){
+      var t = document.querySelector(a.getAttribute('href'));
+      if(!t) return;
+      e.preventDefault();
+      var y = t.getBoundingClientRect().top + window.pageYOffset - 58;
+      window.scrollTo({top:y, behavior: reduce ? 'auto' : 'smooth'});
+      setActive(t.id);
+    });
+  });
+})();
+</script>
+</body>
+</html>
