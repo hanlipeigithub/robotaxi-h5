@@ -342,11 +342,11 @@ footer .dots{display:flex;justify-content:center;gap:5px;margin-top:16px}
 footer .dots i{width:5px;height:5px;border-radius:50%;background:#D7DCE8}
 footer .dots i:first-child{background:var(--accent)}
 
-/* 动效 */
-.rv{opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.8,.2,1)}
-.rv.in{opacity:1;transform:none}
+/* 动效：仅在 JS 可用时隐藏，避免任何环境下出现空白正文 */
+.rv{transition:opacity .7s ease,transform .7s cubic-bezier(.2,.8,.2,1)}
+html.js .rv:not(.in){opacity:0;transform:translateY(16px)}
 @media (prefers-reduced-motion:reduce){
-  .rv{opacity:1;transform:none;transition:none}
+  .rv{opacity:1!important;transform:none!important;transition:none}
   *{animation:none!important}
   html{scroll-behavior:auto}
 }
@@ -880,26 +880,61 @@ footer .dots i:first-child{background:var(--accent)}
     requestAnimationFrame(tick);
   }
 
-  /* 入场动画 / 柱状图 / 数字 */
-  var io = new IntersectionObserver(function(entries){
-    entries.forEach(function(en){
-      if(!en.isIntersecting) return;
-      var el = en.target;
-      el.classList.add('in');
-      if(el.classList.contains('chart')){
-        el.querySelectorAll('.fill').forEach(function(f){ f.style.width = f.dataset.w + '%'; });
-        el.querySelectorAll('.cb').forEach(function(c){ c.style.height = c.dataset.h + 'px'; });
-      }
-      el.querySelectorAll('[data-count]').forEach(countUp);
-      io.unobserve(el);
-    });
-  }, {threshold:0.16, rootMargin:'0px 0px -40px 0px'});
+  /* 入场动画 / 柱状图 / 数字：IO + 滚动位置双保险 */
+  document.documentElement.classList.add('js');
 
-  document.querySelectorAll('.rv, .chart, .statgrid').forEach(function(el, i){
-    if(el.classList.contains('rv')) el.style.transitionDelay = (Math.min(i,4)*0.05) + 's';
-    io.observe(el);
+  function reveal(el){
+    if(el.dataset.shown) return;
+    el.dataset.shown = '1';
+    el.classList.add('in');
+    if(el.classList.contains('chart')){
+      el.querySelectorAll('.fill').forEach(function(f){ f.style.width = f.dataset.w + '%'; });
+      el.querySelectorAll('.cb').forEach(function(c){ c.style.height = c.dataset.h + 'px'; });
+    }
+    el.querySelectorAll('[data-count]').forEach(countUp);
+  }
+
+  var targets = Array.prototype.slice.call(document.querySelectorAll('.rv, .chart, .statgrid'));
+  document.querySelectorAll('.rv').forEach(function(el, i){
+    el.style.transitionDelay = (Math.min(i, 4) * 0.05) + 's';
   });
-  /* 封面数字立即执行 */
+
+  var io = null, ioFired = false;
+  if('IntersectionObserver' in window){
+    io = new IntersectionObserver(function(entries){
+      ioFired = true;
+      entries.forEach(function(en){
+        if(en.isIntersecting){ reveal(en.target); io.unobserve(en.target); }
+      });
+    }, {threshold:0.12, rootMargin:'0px 0px -40px 0px'});
+    targets.forEach(function(el){ io.observe(el); });
+  }
+
+  /* 兜底：不依赖 IO（后台标签页 / WebView 中 IO 可能沉默） */
+  var ticking = false;
+  function sweep(){
+    ticking = false;
+    var vh = window.innerHeight || document.documentElement.clientHeight;
+    targets.forEach(function(el){
+      if(el.dataset.shown) return;
+      var r = el.getBoundingClientRect();
+      if(r.top < vh * 0.94 && r.bottom > -40) reveal(el);
+    });
+  }
+  function onMove(){
+    if(ticking) return;
+    ticking = true;
+    (window.requestAnimationFrame || setTimeout)(sweep);
+  }
+  window.addEventListener('scroll', onMove, {passive:true});
+  window.addEventListener('resize', onMove);
+  document.addEventListener('visibilitychange', function(){ if(!document.hidden) onMove(); });
+  sweep();
+  setTimeout(sweep, 400);
+  /* 若 IO 在两秒内完全没有回调（后台标签页/受限 WebView），直接全量显示，绝不留白 */
+  setTimeout(function(){ if(!ioFired) targets.forEach(reveal); }, 2000);
+
+  /* 封面数字 */
   document.querySelectorAll('.hstat .v').forEach(function(el){ setTimeout(function(){ countUp(el); }, 480); });
 
   /* 导航高亮 */
